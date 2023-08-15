@@ -97,15 +97,15 @@ public class CacheServiceLFU {
             String midKey = sortedKeys.get(mid);
 
             if (midKey.equals(key)) {
-                return cache.get(midKey).getData();
-            } else if (midKey.compareTo(key) < 0) {
-                left = mid + 1;
-            } else {
+                return cache.get(midKey).getData();  // Assuming cache contains the value associated with the key
+            } else if (midKey.compareTo(key) > 0) {
                 right = mid - 1;
+            } else {
+                left = mid + 1;
             }
         }
 
-        return null;
+        return null;  // Key not found
     }
 
     /**
@@ -117,37 +117,35 @@ public class CacheServiceLFU {
      */
     public String searchUsingBinarySearchWithSortStrategy(String key, List<String> sortedKeys, SortStrategy strategy) {
         strategy.sort(sortedKeys);
+
+        // Call iterative binary search method
         return searchUsingIterativeBinarySearch(key, sortedKeys);
     }
 
     /**
      * Search cache entry using binary tree bypass (in-order traversal) algorithm.
      * @param key The key to search for.
-     * @param rootNode The root of the binary search tree (cache keys are used as BST nodes).
+     * @param root The root of the binary search tree (cache keys are used as BST nodes).
      * @return The value associated with the key, or null if not found.
      */
-    public String searchUsingBinaryTreeBypass(String key, BinaryTreeNode rootNode) {
-        return searchUsingBinaryTreeBypass(key, rootNode, new ArrayList<>());
-    }
-
-    private String searchUsingBinaryTreeBypass(String key, BinaryTreeNode node, List<String> sortedKeys) {
-        if (node == null) {
+    public String searchUsingBinaryTreeBypass(String key, BinaryTreeNode root) {
+        if (root == null) {
             return null;
         }
 
-        String leftResult = searchUsingBinaryTreeBypass(key, node.left, sortedKeys);
+        if (key.equals(root.value)) {
+            return cache.get(root.value).getData(); // Assuming cache contains the value associated with the key
+        }
+
+        String leftResult = searchUsingBinaryTreeBypass(key, root.left);
         if (leftResult != null) {
             return leftResult;
         }
 
-        sortedKeys.add(node.value);
-
-        if (node.value.equals(key)) {
-            return cache.get(node.value).getData();
-        }
-
-        return searchUsingBinaryTreeBypass(key, node.right, sortedKeys);
+        return searchUsingBinaryTreeBypass(key, root.right);
     }
+
+
 
     // ... other methods ...
 

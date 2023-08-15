@@ -88,32 +88,52 @@ class CacheServiceTest {
 
     @Test
     void testLRUCacheBinarySearch() {
+        // Simulate cache entries with sorted keys
         List<String> sortedKeys = new ArrayList<>(Arrays.asList("key1", "key2", "key3", "key4", "key5"));
-        assertEquals("value3", cacheServiceLRU.searchUsingRecursiveBinarySearch("key4", sortedKeys, 0, sortedKeys.size() - 1));
-        assertEquals("value1", cacheServiceLRU.searchUsingIterativeBinarySearch("key2", sortedKeys));
+
+        // Add sample data to the cache
+        for (int i = 1; i <= 5; i++) {
+            cacheServiceLRU.put("key" + i, "value" + i);
+        }
+
+        assertEquals("value4", cacheServiceLRU.searchUsingRecursiveBinarySearch("key4", sortedKeys, 0, sortedKeys.size() - 1));
+        assertEquals("value2", cacheServiceLRU.searchUsingIterativeBinarySearch("key2", sortedKeys));
     }
 
     @Test
     void testLFUCacheBinarySearchWithSort() {
         List<String> sortedKeys = new ArrayList<>(Arrays.asList("key5", "key4", "key3", "key2", "key1"));
         CacheServiceLFU.SortStrategy sortStrategy = Collections::sort; // Natural order sorting
-        assertEquals("value2", cacheServiceLFU.searchUsingBinarySearchWithSortStrategy("key3", sortedKeys, sortStrategy));
+        // Add sample data to the cache
+        for (int i = 1; i <= 5; i++) {
+                cacheServiceLFU.put("key" + i, "value" + i);
+        }
+        assertEquals("value3", cacheServiceLFU.searchUsingBinarySearchWithSortStrategy("key3", sortedKeys, sortStrategy));
     }
 
     @Test
     void testLRUCacheBinarySearchWithSort() {
         List<String> sortedKeys = new ArrayList<>(Arrays.asList("key5", "key4", "key3", "key2", "key1"));
         CacheServiceLRU.SortStrategy sortStrategy = Collections::sort; // Natural order sorting
-        assertEquals("value2", cacheServiceLRU.searchUsingBinarySearchWithSortStrategy("key3", sortedKeys, sortStrategy));
+        // Add sample data to the cache
+        for (int i = 1; i <= 5; i++) {
+            cacheServiceLRU.put("key" + i, "value" + i);
+        }
+        assertEquals("value3", cacheServiceLRU.searchUsingBinarySearchWithSortStrategy("key3", sortedKeys, sortStrategy));
     }
 
     @Test
     void testLFUCacheBinaryTreeBypass() {
-        BinaryTreeNode root = new BinaryTreeNode("B");
-        root.left = new BinaryTreeNode("A");
-        root.right = new BinaryTreeNode("C");
-        root.left.left = new BinaryTreeNode("D");
-        root.left.right = new BinaryTreeNode("E");
+        BinaryTreeNode root = new BinaryTreeNode("keyB");
+        root.left = new BinaryTreeNode("keyA");
+        root.right = new BinaryTreeNode("keyC");
+        root.left.left = new BinaryTreeNode("keyD");
+        root.left.right = new BinaryTreeNode("keyE");
+
+        char ch = 'A';
+        for (int i = 1; i <= 5; i++) {
+            cacheServiceLFU.put("key" + ch++, "value" + ch++);
+        }
 
         assertEquals("valueB", cacheServiceLFU.searchUsingBinaryTreeBypass("keyB", root));
         assertNull(cacheServiceLFU.searchUsingBinaryTreeBypass("keyF", root));
