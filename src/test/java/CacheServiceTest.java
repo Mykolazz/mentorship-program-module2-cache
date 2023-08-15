@@ -132,7 +132,9 @@ class CacheServiceTest {
 
         char ch = 'A';
         for (int i = 1; i <= 5; i++) {
-            cacheServiceLFU.put("key" + ch++, "value" + ch++);
+            cacheServiceLFU.put("key" + ch, "value" + ch);
+            System.out.println(ch);
+            ch++;
         }
 
         assertEquals("valueB", cacheServiceLFU.searchUsingBinaryTreeBypass("keyB", root));
@@ -141,12 +143,18 @@ class CacheServiceTest {
 
     @Test
     void testLRUCacheBinaryTreeBypass() {
-        BinaryTreeNode root = new BinaryTreeNode("B");
-        root.left = new BinaryTreeNode("A");
-        root.right = new BinaryTreeNode("C");
-        root.left.left = new BinaryTreeNode("D");
-        root.left.right = new BinaryTreeNode("E");
+        BinaryTreeNode root = new BinaryTreeNode("keyB");
+        root.left = new BinaryTreeNode("keyA");
+        root.right = new BinaryTreeNode("keyC");
+        root.left.left = new BinaryTreeNode("keyD");
+        root.left.right = new BinaryTreeNode("keyE");
 
+        char ch = 'A';
+        for (int i = 1; i <= 5; i++) {
+            cacheServiceLRU.put("key" + ch, "value" + ch);
+            System.out.println(ch);
+            ch++;
+        }
         assertEquals("valueB", cacheServiceLRU.searchUsingBinaryTreeBypass("keyB", root));
         assertNull(cacheServiceLRU.searchUsingBinaryTreeBypass("keyF", root));
     }
