@@ -2,23 +2,34 @@ package com.epam.ld.module2.cache.lfu;
 
 import com.epam.ld.module2.cache.BinaryTreeNode;
 import com.epam.ld.module2.cache.CacheEntry;
+import com.epam.ld.module2.cache.CacheService;
 
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.logging.*;
 
-public class CacheServiceLFU {
-    private static final int MAX_SIZE = 1000;
-    private static final long EVICTION_TIME_MS = 5000;
+public class CacheServiceLFU extends CacheService {
+    private final int DEFAULT_MAX_SIZE = 1000;
+    private final int DEFAULT_EVICTION_TIME_MS = 5000;
+    private final int evictionTimeMillis;
+    private final int maxSize;
     private static final Logger logger = Logger.getLogger(CacheServiceLFU.class.getName());
 
     private final Map<String, CacheEntry> cache = new ConcurrentHashMap<>();
     private final Map<String, Long> accessCount = new ConcurrentHashMap<>();
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-    private int cacheEvictions = 0;
 
     public CacheServiceLFU() {
-        scheduler.scheduleAtFixedRate(this::evict, EVICTION_TIME_MS, EVICTION_TIME_MS, TimeUnit.MILLISECONDS);
+        this.evictionTimeMillis = DEFAULT_EVICTION_TIME_MS;
+        this.maxSize = DEFAULT_MAX_SIZE;
+        scheduler.scheduleAtFixedRate(this::evict, DEFAULT_EVICTION_TIME_MS, DEFAULT_EVICTION_TIME_MS, TimeUnit.MILLISECONDS);
+    }
+
+    public CacheServiceLFU(int size, int expirationInMillis) {
+        this.maxSize = size > 0 ? size : DEFAULT_MAX_SIZE;
+        this.evictionTimeMillis =
+                expirationInMillis > 0 ? expirationInMillis : DEFAULT_EVICTION_TIME_MS;
+        scheduler.scheduleAtFixedRate(this::evict, evictionTimeMillis, evictionTimeMillis, TimeUnit.MILLISECONDS);
     }
 
     public String get(String key) {
@@ -31,7 +42,7 @@ public class CacheServiceLFU {
     }
 
     public void put(String key, String value) {
-        if (cache.size() >= MAX_SIZE) {
+        if (cache.size() >= maxSize) {
             evict();
         }
         cache.put(key, new CacheEntry(value));
@@ -39,7 +50,7 @@ public class CacheServiceLFU {
     }
 
     private void evict() {
-        if (cache.size() >= MAX_SIZE) {
+        if (cache.size() >= maxSize) {
             String leastUsedKey = accessCount.entrySet().stream()
                     .min(Comparator.comparingLong(Map.Entry::getValue))
                     .map(Map.Entry::getKey)
@@ -56,6 +67,15 @@ public class CacheServiceLFU {
 
     public int getCacheEvictions() {
         return cacheEvictions;
+    }
+
+    public String getStatistic(){
+
+        return "cacheEvictions: " + cacheEvictions + "\n"
+                + "averagePutTime: " + averagePutTime + "\n"
+                + "averageGetTime: " + averageGetTime + "\n"
+                + "maxPutTime: " + maxPutTime + "\n"
+                + "maxGetTime: "+ maxGetTime;
     }
 
     /**
