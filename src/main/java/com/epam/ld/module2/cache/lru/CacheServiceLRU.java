@@ -9,15 +9,17 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class CacheServiceLRU {
-    private static final int MAX_SIZE = 100000;
+    private int MAX_SIZE;
+
+    public CacheServiceLRU(int maxSize){
+        this.MAX_SIZE = maxSize;
+    }
 
     private final Cache<String, CacheEntry> cache = CacheBuilder.newBuilder()
             .maximumSize(MAX_SIZE)
-            .removalListener(new RemovalListener<String, CacheEntry>() {
-                public void onRemoval(RemovalNotification<String, CacheEntry> notification) {
-                    if (notification.getCause() == RemovalCause.SIZE) {
-                        System.out.println("Evicted: " + notification.getKey());
-                    }
+            .removalListener((RemovalListener<String, CacheEntry>) notification -> {
+                if (notification.getCause() == RemovalCause.SIZE) {
+                    System.out.println("Evicted: " + notification.getKey());
                 }
             })
             .expireAfterAccess(5, TimeUnit.SECONDS)

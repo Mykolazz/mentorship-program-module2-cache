@@ -8,7 +8,7 @@ import java.util.concurrent.*;
 import java.util.logging.*;
 
 public class CacheServiceLFU {
-    private static final int MAX_SIZE = 1000;
+    private static final int MAX_SIZE = 200000;
     private static final long EVICTION_TIME_MS = 5000;
     private static final Logger logger = Logger.getLogger(CacheServiceLFU.class.getName());
 
@@ -18,6 +18,7 @@ public class CacheServiceLFU {
     private int cacheEvictions = 0;
 
     public CacheServiceLFU() {
+       // this.MAX_SIZE = maxSize;
         scheduler.scheduleAtFixedRate(this::evict, EVICTION_TIME_MS, EVICTION_TIME_MS, TimeUnit.MILLISECONDS);
     }
 

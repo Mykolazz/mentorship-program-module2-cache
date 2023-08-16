@@ -12,11 +12,12 @@ class CacheServiceTest {
 
     private CacheServiceLFU cacheServiceLFU;
     private CacheServiceLRU cacheServiceLRU;
+    private int cacheSize = 1000;
 
     @BeforeEach
     void setUp() {
         cacheServiceLFU = new CacheServiceLFU();
-        cacheServiceLRU = new CacheServiceLRU();
+        cacheServiceLRU = new CacheServiceLRU(cacheSize);
     }
 
     @Test
