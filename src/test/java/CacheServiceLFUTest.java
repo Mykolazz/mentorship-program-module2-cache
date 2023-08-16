@@ -11,7 +11,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class CacheServiceLFUTest {
+public class CacheServiceLFUTest extends CacheServiceTest {
     private CacheServiceLFU cacheServiceLFU;
 
     @BeforeEach
@@ -30,16 +30,17 @@ public class CacheServiceLFUTest {
     @Test
     void testLFUCacheEviction() {
         // Add a large number of entries to trigger eviction
-        for (int i = 0; i < 200000; i++) {
+        for (int i = 0; i < numberOfAdditions; i++) {
             cacheServiceLFU.put("key" + i, "value" + i);
         }
-
+        System.out.println("Cache evictions before delay: " + cacheServiceLFU.getCacheEvictions());
         // Sleep for some time to allow eviction to take place
         try {
             Thread.sleep(10000); // Sleep for 10 seconds (adjust as needed)
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        System.out.println("Cache evictions after delay: " + cacheServiceLFU.getCacheEvictions());
 
         // Check if the evicted key is not present
         assertNull(cacheServiceLFU.get("key0"));

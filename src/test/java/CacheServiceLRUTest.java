@@ -8,7 +8,7 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class CacheServiceTest {
+class CacheServiceLRUTest extends CacheServiceTest {
     private CacheServiceLRU cacheServiceLRU;
 
     @BeforeEach
@@ -78,7 +78,7 @@ class CacheServiceTest {
         char ch = 'A';
         for (int i = 1; i <= 5; i++) {
             cacheServiceLRU.put("key" + ch, "value" + ch);
-            System.out.println(ch);
+            System.out.println("char " + ch);
             ch++;
         }
         assertEquals("valueB", cacheServiceLRU.searchUsingBinaryTreeBypass("keyB", root));
