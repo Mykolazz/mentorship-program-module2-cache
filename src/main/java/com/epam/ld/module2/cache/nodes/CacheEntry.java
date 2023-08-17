@@ -1,4 +1,4 @@
-package com.epam.ld.module2.cache;
+package com.epam.ld.module2.cache.nodes;
 
 public class CacheEntry {
 
@@ -10,6 +10,13 @@ public class CacheEntry {
 
     public String getData() {
         return data;
+    }
+
+    @Override
+    public String toString() {
+        return "CacheEntry{" +
+                "data='" + data + '\'' +
+                '}';
     }
 }
 

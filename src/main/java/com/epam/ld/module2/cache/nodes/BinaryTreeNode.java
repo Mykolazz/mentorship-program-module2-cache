@@ -1,4 +1,4 @@
-package com.epam.ld.module2.cache;
+package com.epam.ld.module2.cache.nodes;
 
 public class BinaryTreeNode {
     public String value;

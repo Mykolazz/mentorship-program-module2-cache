@@ -1,4 +1,4 @@
-import com.epam.ld.module2.cache.lru.CacheServiceLRUv2;
+import com.epam.ld.module2.cache.CacheServiceLRUv2;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -23,19 +23,16 @@ public class CacheServiceLRUv2Test extends CacheServiceTest {
 
     @Test
     void testLRUCacheEviction() {
-        // Add a large number of entries to trigger eviction
         for (int i = 0; i < numberOfAdditions; i++) {
             cacheServiceLRUv2.put("key" + i, "value" + i);
         }
 
-        // Sleep for some time to allow eviction to take place
         try {
-            Thread.sleep(delay); // Sleep for 10 seconds (adjust as needed)
+            Thread.sleep(5000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-        // Check if the evicted key is not present
         assertNull(cacheServiceLRUv2.get("key0"));
     }
 }

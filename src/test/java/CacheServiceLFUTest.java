@@ -1,5 +1,6 @@
-import com.epam.ld.module2.cache.BinaryTreeNode;
-import com.epam.ld.module2.cache.lfu.CacheServiceLFU;
+import com.epam.ld.module2.cache.SortStrategy;
+import com.epam.ld.module2.cache.nodes.BinaryTreeNode;
+import com.epam.ld.module2.cache.CacheServiceLFU;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,7 +17,7 @@ public class CacheServiceLFUTest extends CacheServiceTest {
 
     @BeforeEach
     void setUp() {
-        cacheServiceLFU = new CacheServiceLFU();
+        cacheServiceLFU = new CacheServiceLFU(5, 5000);
     }
 
     @Test
@@ -25,38 +26,36 @@ public class CacheServiceLFUTest extends CacheServiceTest {
         cacheServiceLFU.put("key2", "value2");
         assertEquals("value1", cacheServiceLFU.get("key1"));
         assertEquals("value2", cacheServiceLFU.get("key2"));
+        System.out.println("Statistic for 'testLFUCachePutAndGet': {" + "\n"
+                + cacheServiceLFU.getStatistic() + " } ");
     }
 
     @Test
     void testLFUCacheEviction() {
-        // Add a large number of entries to trigger eviction
-        for (int i = 0; i < numberOfAdditions; i++) {
+        for (int i = 0; i < 6; i++) {
             cacheServiceLFU.put("key" + i, "value" + i);
+           // System.out.println(cacheServiceLFU.cache);
         }
-        System.out.println("Cache evictions before delay: " + cacheServiceLFU.getCacheEvictions());
-        // Sleep for some time to allow eviction to take place
+       // System.out.println("Cache evictions before delay: " + cacheServiceLFU.getCacheEvictions());
+
         try {
-            Thread.sleep(10000); // Sleep for 10 seconds (adjust as needed)
+            Thread.sleep(6000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        System.out.println("Cache evictions after delay: " + cacheServiceLFU.getCacheEvictions());
+       // System.out.println("Cache evictions after delay: " + cacheServiceLFU.getCacheEvictions());
 
-        // Check if the evicted key is not present
         assertNull(cacheServiceLFU.get("key0"));
     }
 
     @Test
     void testLFUCacheBinarySearch() {
-        // Simulate cache entries with sorted keys
         List<String> sortedKeys = new ArrayList<>(Arrays.asList("key1", "key2", "key3", "key4", "key5"));
 
-        // Add sample data to the cache
         for (int i = 1; i <= 5; i++) {
             cacheServiceLFU.put("key" + i, "value" + i);
         }
 
-        // Call binary search methods and assert results
         assertEquals("value4", cacheServiceLFU.searchUsingRecursiveBinarySearch("key4", sortedKeys, 0, sortedKeys.size() - 1));
         assertEquals("value2", cacheServiceLFU.searchUsingIterativeBinarySearch("key2", sortedKeys));
     }
@@ -64,8 +63,8 @@ public class CacheServiceLFUTest extends CacheServiceTest {
     @Test
     void testLFUCacheBinarySearchWithSort() {
         List<String> sortedKeys = new ArrayList<>(Arrays.asList("key5", "key4", "key3", "key2", "key1"));
-        CacheServiceLFU.SortStrategy sortStrategy = Collections::sort; // Natural order sorting
-        // Add sample data to the cache
+        SortStrategy sortStrategy = Collections::sort;
+
         for (int i = 1; i <= 5; i++) {
             cacheServiceLFU.put("key" + i, "value" + i);
         }
@@ -83,7 +82,6 @@ public class CacheServiceLFUTest extends CacheServiceTest {
         char ch = 'A';
         for (int i = 1; i <= 5; i++) {
             cacheServiceLFU.put("key" + ch, "value" + ch);
-            System.out.println(ch);
             ch++;
         }
 

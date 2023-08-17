@@ -1,6 +1,6 @@
-import com.epam.ld.module2.cache.BinaryTreeNode;
-import com.epam.ld.module2.cache.lfu.CacheServiceLFU;
-import com.epam.ld.module2.cache.lru.CacheServiceLRU;
+import com.epam.ld.module2.cache.SortStrategy;
+import com.epam.ld.module2.cache.nodes.BinaryTreeNode;
+import com.epam.ld.module2.cache.CacheServiceLRU;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -22,32 +22,29 @@ class CacheServiceLRUTest extends CacheServiceTest {
         cacheServiceLRU.put("key2", "value2");
         assertEquals("value1", cacheServiceLRU.get("key1"));
         assertEquals("value2", cacheServiceLRU.get("key2"));
+        System.out.println("Statistic for 'testLRUCachePutAndGet'" + "\n"
+                + cacheServiceLRU.getStatistic());
     }
 
     @Test
     void testLRUCacheEviction() {
-        // Add a large number of entries to trigger eviction
-        for (int i = 0; i < 200000; i++) {
+        for (int i = 0; i < 100010; i++) {
             cacheServiceLRU.put("key" + i, "value" + i);
         }
 
-        // Sleep for some time to allow eviction to take place
         try {
-            Thread.sleep(10000); // Sleep for 10 seconds (adjust as needed)
+            Thread.sleep(10); // Sleep for n seconds (adjust if needed)
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-        // Check if the evicted key is not present
         assertNull(cacheServiceLRU.get("key0"));
     }
 
     @Test
     void testLRUCacheBinarySearch() {
-        // Simulate cache entries with sorted keys
         List<String> sortedKeys = new ArrayList<>(Arrays.asList("key1", "key2", "key3", "key4", "key5"));
 
-        // Add sample data to the cache
         for (int i = 1; i <= 5; i++) {
             cacheServiceLRU.put("key" + i, "value" + i);
         }
@@ -59,8 +56,8 @@ class CacheServiceLRUTest extends CacheServiceTest {
     @Test
     void testLRUCacheBinarySearchWithSort() {
         List<String> sortedKeys = new ArrayList<>(Arrays.asList("key5", "key4", "key3", "key2", "key1"));
-        CacheServiceLRU.SortStrategy sortStrategy = Collections::sort; // Natural order sorting
-        // Add sample data to the cache
+        SortStrategy sortStrategy = Collections::sort;
+
         for (int i = 1; i <= 5; i++) {
             cacheServiceLRU.put("key" + i, "value" + i);
         }

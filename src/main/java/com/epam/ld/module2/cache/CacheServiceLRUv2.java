@@ -1,4 +1,4 @@
-package com.epam.ld.module2.cache.lru;
+package com.epam.ld.module2.cache;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
